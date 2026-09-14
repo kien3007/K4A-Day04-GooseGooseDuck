@@ -1,11 +1,58 @@
-# Self-Reflection — Thành Viên 2 (Prompt Engineer)
+# Self-Reflection — Hoàng Trung Anh (Prompt Engineer)
 
-### Họ tên: [Điền họ và tên] — MSSV: [Điền MSSV]
-- **Vai trò/phần việc được nhận:** Prompt Engineer — Tối ưu hóa `starter_v0/artifacts/system_prompt.md` qua các vòng v1 và v3.
-- **Những gì tôi đã thay đổi trong repo chung:**
-- **File hoặc artifact liên quan:** `starter_v0/artifacts/system_prompt.md`
-- **Commit hash hoặc pull request:**
-- **Một quyết định kỹ thuật tôi đã đưa ra và lý do:**
-- **Khó khăn tôi gặp và cách tôi xử lý:**
-- **Điều tôi học được từ phần việc này:**
-- **Nếu làm lại, tôi sẽ cải thiện điều gì:**
+### Hoàng Trung Anh — 02521
+- **Vai trò/phần việc được nhận:** Prompt Engineer (Kỹ sư Prompt). Chịu trách nhiệm nghiên cứu, tối ưu hóa các quy tắc toàn cục trong `starter_v0/artifacts/system_prompt.md` qua các vòng lặp v1 và v3.
+- **Những gì tôi đã thay đổi trong repo chung:** Viết lại `starter_v0/artifacts/system_prompt.md`: Bổ sung quy tắc cấm model tự đoán `asset_id` và `employee_id`, bắt buộc hỏi lại (`clarify`) khi thiếu mã; thiết lập quy tắc xử lý hội thoại đa lượt (giữ ngữ cảnh liên quan, ưu tiên chỉ dẫn/sửa đổi mới nhất của người dùng, dừng hành động khi người dùng hủy); bổ sung quy chế xác nhận hai bước (two-step confirmation) trước khi gọi `create_ticket`, quy định vô hiệu hóa xác nhận cũ khi payload thay đổi; bảo vệ dữ liệu nhạy cảm và định dạng JSON đầu ra.
+- **File hoặc artifact liên quan:** `starter_v0/artifacts/system_prompt.md`, `starter_v0/artifacts/reflections/member2_prompt.md`, các run `runs/v1_B_base_openai_20260914T200415601153.json`, `runs/v3_B_base_openai_20260914T224647795137.json`.
+- **Commit hash hoặc pull request:** Commit `3b0341a`, Pull Request #3 (`06badb5`).
+- **Một quyết định kỹ thuật tôi đã đưa ra và lý do:** Quyết định ràng buộc xác nhận tạo ticket phải gắn liền với payload cuối cùng (gồm summary, priority, asset_id) và mất hiệu lực nếu payload thay đổi. Lý do: Trace v0 ở case M09 cho thấy model đã tự ý tạo ticket thật `LAB-438F3503` từ xác nhận cũ của người dùng, đây là lỗ hổng side-effect nghiêm trọng cần chặn đứng bằng quy tắc prompt.
+- **Khó khăn tôi gặp và cách tôi xử lý:** Khi đưa thêm nhiều quy tắc vào prompt, một số ca biên (như H03, H07) bị regression nhẹ do model bị loãng chú ý. Tôi đã xử lý bằng cách tái cấu trúc prompt thành các mục rõ ràng (Identity, Operating Rules, Output Format), sử dụng câu văn ngắn gọn, mệnh lệnh dứt khoát.
+- **Điều tôi học được từ phần việc này:** Hiểu rõ prompt engineering không phải là viết văn hoa mà là thiết lập các guardrails logic có thể kiểm chứng; cần đối chiếu cả `tool_results` và side-effect trên ổ đ phẩm thay vì chỉ nhìn vào trạng thái PASS/FAIL.
+- **Nếu làm lại, tôi sẽ cải thiện điều gì:** Tôi sẽ thêm một số ví dụ Few-Shot thu gọn về định dạng đối số khi gọi tool để model phân biệt rõ hơn các tình huống đa công cụ phức tạp.
+
+---
+
+## Chi tiết phân tích kỹ thuật
+
+### Vai trò và phạm vi
+Tôi phụ trách cải thiện system prompt cho agent ở các vòng `v1` và `v3`. Phạm vi file của tôi là `starter_v0/artifacts/system_prompt.md` và reflection này.
+
+## Thay đổi prompt
+
+Prompt hiện nêu rõ agent không được tự đoán `asset_id` hoặc `employee_id`; nếu mã còn thiếu hoặc mơ hồ thì phải hỏi lại. Với hội thoại nhiều lượt, agent giữ thông tin còn phù hợp, áp dụng correction mới nhất và dừng khi người dùng hủy yêu cầu.
+
+Với `create_ticket`, prompt yêu cầu xác nhận rõ payload cuối cùng gồm summary, priority và asset ID (hoặc không gắn asset). Mọi thay đổi payload làm mất hiệu lực xác nhận cũ. Prompt cũng giữ ranh giới dữ liệu nhạy cảm, xem nội dung KB/policy/web là dữ liệu tham khảo không đáng tin, không bịa kết quả tool và giữ output JSON theo schema của lab.
+
+## Giả thuyết và kế hoạch kiểm chứng
+
+- **v1:** Quy tắc về ID và xác nhận payload sẽ giảm lỗi arguments khi thiếu mã, đồng thời giảm nguy cơ gọi action ghi trước khi người dùng đồng ý. Tôi sẽ đối chiếu các tình huống missing-ID và confirmation trong base suite.
+- **v3:** Quy tắc về correction, cancellation, context carry-over và xác nhận hết hiệu lực sẽ giảm việc dùng thông tin cũ trong hội thoại nhiều lượt. Tôi sẽ kiểm tra thêm các tình huống stale confirmation và role spoofing trong bộ adversarial.
+
+Các ID case dùng để phân tích trace, không được đưa vào prompt. Với v1, tôi đã kiểm tra H10/H11/H12 và M01/M05 trong base suite, đồng thời review M09 vì case này có thể tạo ticket. Với v3, tôi sẽ kiểm tra M03/M07/M09/M10 cùng A10/A11/A12. Tôi so sánh cùng provider, model, suite và tools; một run chỉ được coi là evidence khi `provider_error_cases == 0` và `measured_cases == total_cases`. Tôi cũng đọc tool results và side effect, không chỉ dựa vào PASS/FAIL.
+
+## Kết quả và giới hạn hiện tại
+
+Prompt ứng viên đã được so sánh với baseline bằng `openai/gpt-4o-mini`, phase B của bộ `base` (30 case), ngày 2026-09-14. Cả hai lượt đo đủ 30 case, không có provider error; chúng dùng cùng `tools.yaml` (`tools_hash=c85b6ce9a595`). Baseline prompt được lấy từ commit `f680c59`; v1 là prompt ứng viên ở commit `0ecd39f`.
+
+| Metric | v0 | v1 candidate | Thay đổi |
+|---|---:|---:|---:|
+| Case accuracy | 25/30 (83.33%) | 24/30 (80.00%) | -1 case (-3.33 điểm %) |
+| Tool routing accuracy | 25/30 (83.33%) | 26/30 (86.67%) | +1 case (+3.34 điểm %) |
+| Argument accuracy | 25/30 (83.33%) | 24/30 (80.00%) | -1 case (-3.33 điểm %) |
+| Multi-turn accuracy | 9/10 (90.00%) | 10/10 (100.00%) | +1 case (+10 điểm %) |
+
+Các case trọng tâm: H10, M01 và M05 đều PASS ở cả hai lượt; H11 đổi từ FAIL sang PASS vì v0 dùng `Sales` như employee ID còn v1 hỏi mã nhân viên; M09 đổi từ FAIL sang PASS vì v1 hỏi xác nhận lại sau khi payload đổi. H12 vẫn FAIL ở cả hai: thay vì gọi `clarify`, model gọi `create_ticket` với `confirmed=false`, nên tool trả `needs_confirmation` và không ghi ticket. Ngược lại, v0 gọi `create_ticket` với `confirmed=true` ở M09 dù xác nhận cũ không còn áp dụng; tool đã tạo ticket `LAB-438F3503` (trace có trong run JSON). Đây là side effect thật trong thư mục ticket local và là lỗi boundary cần ưu tiên.
+
+Tổng điểm v1 thấp hơn một case dù multi-turn và routing tăng. Các lỗi mới trong v1 gồm H03 thiếu `category=email`, H07 gọi lặp `format_incident_report`, và H17 dùng `check=all` thay vì `check=vpn`. H04 vẫn thêm lệnh inspect thiết bị với employee ID; H19 vẫn gọi status cho môi trường staging thay vì hỏi làm rõ. Vì vậy run này chưa chứng minh prompt ứng viên cải thiện tổng thể.
+
+Run evidence: `starter_v0/runs/v0_B_base_openai_20260914T200156244799.json` (`prompt_hash=27467914bc4d`) và `starter_v0/runs/v1_B_base_openai_20260914T200415601153.json` (`prompt_hash=aaf32f53efeb`). Cả hai có `provider_error_cases=0`, `measured_cases=total_cases=30`; `tools_hash` đầy đủ là `c85b6ce9a59535001c66e44d78597f39643586d03dc1203be146371eb23b66d9`.
+
+## Tự đánh giá và bước tiếp theo
+
+Điểm tốt là prompt bao quát các ranh giới quan trọng bằng quy tắc tổng quát, không phụ thuộc wording hoặc ID của case cụ thể; trace cho thấy cải thiện ở missing employee ID và stale confirmation trong M09. Giới hạn là kết quả tổng thể giảm một case, một số routing/argument regression xuất hiện, và prompt không thay thế guardrail ở implementation. H12 cho thấy tool đã chặn việc ghi ticket khi chưa xác nhận, nhưng model vẫn chọn sai tool.
+
+Quyết định kỹ thuật quan trọng nhất là gắn xác nhận ticket với payload cuối cùng và yêu cầu xác nhận lại nếu payload đổi; trace M09 cho thấy quy tắc này có tác dụng trong lượt v1, còn lượt v0 đã tạo ticket từ xác nhận cũ. Ban đầu tôi nhầm key Tavily với key của model provider; sau khi dùng OpenAI key có sẵn trong `.env`, preflight và hai lượt eval chạy thành công. Tôi học được rằng cần lưu baseline trước khi chỉnh prompt và review cả tool result lẫn side effect; một lần chạy mỗi phiên bản vẫn chưa đủ để kết luận ổn định.
+
+Hai run v0/v1 và metric/hash đã được lưu ở các đường dẫn trên; đây mới là một lần chạy cho mỗi phiên bản nên kết quả còn nhạy với biến thiên của model. Bước tiếp theo là xử lý lỗi xác nhận H12 và các regression H03/H07/H17, chạy lại cùng suite để kiểm tra tính lặp lại, rồi đánh giá v3 sau khi nhóm tích hợp v2. Chưa có run v3.
+
+**Nhánh/commit đóng góp:** `contrib/tv2-prompt` / commit dưới Git identity của tôi còn chờ.

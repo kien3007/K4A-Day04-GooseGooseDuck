@@ -1,17 +1,16 @@
-<<<<<<< HEAD
-# Self-Reflection — Thành Viên 4 (Evaluation Specialist)
+# Self-Reflection — Nguyễn Chí Công (Evaluation Specialist)
 
-### Họ tên: [Điền họ và tên] — MSSV: [Điền MSSV]
-- **Vai trò/phần việc được nhận:** Evaluation Specialist — Thiết kế 10 test case trong `starter_v0/data/eval_group.json`, kiểm thử suite group.
-- **Những gì tôi đã thay đổi trong repo chung:**
-- **File hoặc artifact liên quan:** `starter_v0/data/eval_group.json`
-- **Commit hash hoặc pull request:**
-- **Một quyết định kỹ thuật tôi đã đưa ra và lý do:**
-- **Khó khăn tôi gặp và cách tôi xử lý:**
-- **Điều tôi học được từ phần việc này:**
-- **Nếu làm lại, tôi sẽ cải thiện điều gì:**
-=======
-# Member 4 Reflection — Tác giả Đánh giá & Kiểm thử
+### Nguyễn Chí Công — 02634
+- **Vai trò/phần việc được nhận:** Evaluation & Test Author (Tác giả Đánh giá & Kiểm thử). Chịu trách nhiệm thiết kế, xây dựng và xác thực bộ dữ liệu đánh giá nhóm độc lập `starter_v0/data/eval_group.json`.
+- **Những gì tôi đã thay đổi trong repo chung:** Thiết kế và lập trình hoàn chỉnh tệp `starter_v0/data/eval_group.json` với đúng 10 test case gốc (5 single-turn và 5 multi-turn) bao phủ toàn diện các failure mode thực tế của IT Helpdesk; viết bản tự nhận xét chi tiết và xác thực cấu trúc bộ kiểm thử tại `starter_v0/artifacts/reflections/member4_eval.md`.
+- **File hoặc artifact liên quan:** `starter_v0/data/eval_group.json`, `starter_v0/artifacts/reflections/member4_eval.md`, run kết quả `runs/v3_B_group_openai_20260914T224547113767.json`.
+- **Commit hash hoặc pull request:** Commit `8732964`, commit `a6ea3f5`, Pull Request #4 (`2ed4284`).
+- **Một quyết định kỹ thuật tôi đã đưa ra và lý do:** Quyết định thiết kế 5 ca multi-turn tập trung vào các tình huống biên khó: sửa đổi mã máy giữa chừng (G06), đổi dịch vụ nhưng giữ môi trường (G07), hủy yêu cầu tạo ticket (G08), gọi song song hai công cụ (G09), và cập nhật tiêu đề báo cáo sự cố (G10). Lý do: Đây là các hành vi người dùng thực tế hay gặp nhất mà các bài kiểm thử đơn lẻ không thể phát hiện được.
+- **Khó khăn tôi gặp và cách tôi xử lý:** Đảm bảo đúng định dạng schema của lab để `run_eval.py` có thể chấm tự động mà không bị vấp lỗi `KeyError` hoặc sai `failure_type`. Tôi đã viết script Python nhỏ để kiểm tra tính hợp lệ của schema và đếm số lượng case trước khi tạo PR.
+- **Điều tôi học được từ phần việc này:** Hiểu rõ tầm quan trọng của việc xây dựng bộ benchmark khách quan; một bộ kiểm thử tốt giúp nhóm phát hiện ra các điểm mù trong thiết kế agent mà bộ base cố định chưa bao phủ hết.
+- **Nếu làm lại, tôi sẽ cải thiện điều gì:** Tôi sẽ thiết kế thêm các ca kiểm thử phức tạp 3-4 lượt hội thoại với tình huống người dùng liên tục đổi ý để kiểm tra giới hạn chịu tải ngữ cảnh của agent.
+
+---
 
 ## 1. Tóm tắt đóng góp
 
@@ -95,4 +94,3 @@ Vai trò này rất quan trọng vì một bộ đánh giá tốt không chỉ k
 ## 6. Ghi chú cuối cùng
 
 Với vai trò **Evaluation & Test Author**, tôi đã đóng góp bộ kiểm thử nhóm gốc, giúp nhóm đánh giá xem helpdesk agent có đang được cải thiện theo cách có thể đo lường và tái lập hay không. Bộ dữ liệu này hữu ích trong việc xác thực độ chính xác của định tuyến công cụ, tính đúng đắn của tham số, khả năng xử lý hội thoại nhiều lượt và việc tuân thủ các ranh giới hành động trước khi dự án được hoàn thiện.
->>>>>>> 2ed42848b5b06b70ef673edbfb7eb04ff6e2f33d

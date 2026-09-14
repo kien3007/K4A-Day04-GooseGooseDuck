@@ -1,8 +1,20 @@
-# Tự reflection — TV3 Tool Interface Engineer
+# Self-Reflection — Phạm Hoàng Anh Khôi (Tool Interface Engineer)
 
-### Họ tên: [Điền họ và tên] — MSSV: [Điền MSSV]
+### Phạm Hoàng Anh Khôi — 02404
+- **Vai trò/phần việc được nhận:** Tool Interface Engineer (Kỹ sư Giao diện Công cụ). Chịu trách nhiệm rà soát, tái cấu trúc và chuẩn hóa toàn bộ 9 khai báo công cụ trong `starter_v0/artifacts/tools.yaml` ở vòng cải tiến v2.
+- **Những gì tôi đã thay đổi trong repo chung:** Cập nhật mô tả (description) chi tiết cho 9 tool trong `tools.yaml`, phân định rạch ròi ranh giới giữa dịch vụ dùng chung (`check_service_status`) và thiết bị cá nhân (`inspect_device`), giữa tài liệu kỹ thuật (`search_kb`) và chính sách IT (`policy`); bổ sung rào chắn bảo mật trong `search_device_info` (chỉ gửi manufacturer, model, query_type ra web search ngoài, cấm gửi dữ liệu nội bộ); chuẩn hóa JSON schema, bổ sung các thuộc tính `enum` cho `check`, `category`, `environment`, `policy_area`, `template` và đặt các trường bắt buộc `required`.
+- **File hoặc artifact liên quan:** `starter_v0/artifacts/tools.yaml`, `starter_v0/artifacts/reflections/member3_tools.md`.
+- **Commit hash hoặc pull request:** Nhánh `contrib/tv3-tools`, commit cập nhật `tools.yaml` (hash `c85b6ce9a595`).
+- **Một quyết định kỹ thuật tôi đã đưa ra và lý do:** Quyết định đưa các tập giá trị hợp lệ vào thuộc tính `enum` trực tiếp trong JSON schema thay vì chỉ giải thích trong văn bản description. Lý do: Cơ chế Function Calling của LLM sẽ áp dụng constrained sampling trực tiếp từ schema, triệt tiêu 100% tình trạng sinh đối số sai định dạng hoặc bịa đặt giá trị lạ.
+- **Khó khăn tôi gặp và cách tôi xử lý:** Ở ca H12, model vẫn gọi `create_ticket(confirmed=false)` nếu chỉ mô tả sơ sài. Tôi đã bổ sung cảnh báo mạnh mẽ trong description của `create_ticket` yêu cầu chỉ gọi khi `confirmed=true`, nếu chưa có xác nhận thì bắt buộc gọi `clarify`.
+- **Điều tôi học được từ phần việc này:** Khai báo công cụ (Tool Interface) thực chất là một phần mở rộng cốt lõi của Prompt; một schema tốt và chặt chẽ có sức mạnh định hướng hành vi mô hình không thua kém system prompt.
+- **Nếu làm lại, tôi sẽ cải thiện điều gì:** Tôi sẽ viết thêm script test tự động bằng `jsonschema` trong Python để kiểm tra chéo tính tương thích giữa `tools.yaml` và các hàm thực thi trong `starter_v0/tools/`.
 
-## 1. Vai trò và phạm vi
+---
+
+## Chi tiết phân tích kỹ thuật
+
+### 1. Vai trò và phạm vi
 
 Tôi đảm nhận vai trò **Tool Interface Engineer (Kỹ sư Giao diện Công cụ)** cho bài Lab IT Helpdesk Agent. 
 - **Phạm vi file phụ trách:** `starter_v0/artifacts/tools.yaml` (ở vòng cải tiến `v2`) và file reflection này.
