@@ -1,3 +1,16 @@
+<<<<<<< HEAD
+# Self-Reflection — Thành Viên 4 (Evaluation Specialist)
+
+### Họ tên: [Điền họ và tên] — MSSV: [Điền MSSV]
+- **Vai trò/phần việc được nhận:** Evaluation Specialist — Thiết kế 10 test case trong `starter_v0/data/eval_group.json`, kiểm thử suite group.
+- **Những gì tôi đã thay đổi trong repo chung:**
+- **File hoặc artifact liên quan:** `starter_v0/data/eval_group.json`
+- **Commit hash hoặc pull request:**
+- **Một quyết định kỹ thuật tôi đã đưa ra và lý do:**
+- **Khó khăn tôi gặp và cách tôi xử lý:**
+- **Điều tôi học được từ phần việc này:**
+- **Nếu làm lại, tôi sẽ cải thiện điều gì:**
+=======
 # Member 4 Reflection — Tác giả Đánh giá & Kiểm thử
 
 ## 1. Tóm tắt đóng góp
@@ -82,3 +95,4 @@ Vai trò này rất quan trọng vì một bộ đánh giá tốt không chỉ k
 ## 6. Ghi chú cuối cùng
 
 Với vai trò **Evaluation & Test Author**, tôi đã đóng góp bộ kiểm thử nhóm gốc, giúp nhóm đánh giá xem helpdesk agent có đang được cải thiện theo cách có thể đo lường và tái lập hay không. Bộ dữ liệu này hữu ích trong việc xác thực độ chính xác của định tuyến công cụ, tính đúng đắn của tham số, khả năng xử lý hội thoại nhiều lượt và việc tuân thủ các ranh giới hành động trước khi dự án được hoàn thiện.
+>>>>>>> 2ed42848b5b06b70ef673edbfb7eb04ff6e2f33d
